@@ -15,7 +15,7 @@ export default function TimerChallenge({ title, targetTime }) {
         timer.current = setTimeout(() => {
             // make sure always target .current to ref objects
             setTimerExpired(true);
-            dialog.current.showModal(); // standard show feature from dialog, not react
+            dialog.current.open(); // standard show feature from dialog, not react
         }, targetTime * 1000);
 
         setTimerStarted(true);
