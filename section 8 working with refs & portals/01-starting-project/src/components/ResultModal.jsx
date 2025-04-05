@@ -1,4 +1,6 @@
-export default function ResultModal({ref, result, targetTime}) { /*passing ref works for react version 19 or higher, otherwise use forwardRef */
+import {forwardRef } from 'react';
+
+const ResultModal = forwardRef(function ResultModal({result, targetTime}, ref) { /* with older version of react, you need to use forwardRef to pass the ref to the component */
     return (
         <dialog ref={ref} className="result-modal">
             <h2>Your {result} </h2>
@@ -9,4 +11,6 @@ export default function ResultModal({ref, result, targetTime}) { /*passing ref w
             </form>
         </dialog>
     )
-}
+})
+
+export default ResultModal;
