@@ -4,6 +4,8 @@ import ResultModal from "./ResultModal";
 // let timer; // this will not work, because the timer GLOBAL variable will be share amoung other instances of the component
 export default function TimerChallenge({ title, targetTime }) {
     const timer = useRef(); // this will work, because the timer variable is scoped to the component instance, and wont be affected by state changes
+    const dialog = useRef();
+
     const [timerStarted, setTimerStarted] = useState(false);
     const [timerExpired, setTimerExpired] = useState(false);
 
@@ -13,6 +15,7 @@ export default function TimerChallenge({ title, targetTime }) {
         timer.current = setTimeout(() => {
             // make sure always target .current to ref objects
             setTimerExpired(true);
+            dialog.current.showModal(); // standard show feature from dialog, not react
         }, targetTime * 1000);
 
         setTimerStarted(true);
@@ -26,7 +29,7 @@ export default function TimerChallenge({ title, targetTime }) {
 
     return (
         <>
-            {timerExpired && <ResultModal targetTime={targetTime} result={"lost"}/>}
+            <ResultModal ref={dialog} targetTime={targetTime} result={"lost"}/>
             <section className="challenge">
                 <h2>{title}</h2>
                 <p className="challenge-time">
