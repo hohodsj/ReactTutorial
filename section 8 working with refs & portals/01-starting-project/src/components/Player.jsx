@@ -6,7 +6,7 @@ export default function Player() {
   const [enteredPlayerName, setEnteredPlayerName] = useState(null);
 
   function handleClick() {
-    // current is THE ONLY property that all ref has, has it have access to all the properties of the element
+    // current is THE ONLY property that all ref has, it will have access to all the properties of the element
     // in this case, the <input /> element
     setEnteredPlayerName(playerName.current.value);
   }
