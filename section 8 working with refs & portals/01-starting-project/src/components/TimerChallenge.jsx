@@ -1,47 +1,52 @@
 import React, { useState, useRef } from "react";
 import ResultModal from "./ResultModal";
 
-// let timer; // this will not work, because the timer GLOBAL variable will be share amoung other instances of the component
 export default function TimerChallenge({ title, targetTime }) {
     const timer = useRef(); // this will work, because the timer variable is scoped to the component instance, and wont be affected by state changes
     const dialog = useRef();
 
-    const [timerStarted, setTimerStarted] = useState(false);
-    const [timerExpired, setTimerExpired] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(targetTime * 1000);
 
-    // let timer; // this will not work, because it will be reset every time when the timerStarted state changes
+    const timerIsActive = timeRemaining > 0 && timeRemaining < targetTime * 1000;
+
+    if(timeRemaining <= 0) {
+        clearInterval(timer.current);
+        dialog.current.open(); // show the modal with ref we created this level
+    }
+
+    function handleReset() {
+        setTimeRemaining(targetTime * 1000);
+    }
 
     function handleStart() {
-        timer.current = setTimeout(() => {
-            // make sure always target .current to ref objects
-            setTimerExpired(true);
-            dialog.current.open(); // standard show feature from dialog, not react
-        }, targetTime * 1000);
-
-        setTimerStarted(true);
+        console.log("Timer started");
+        timer.current = setInterval(() => {
+            setTimeRemaining((prevTimeRemaining) => (
+                prevTimeRemaining -= 10 // decrement by 10 milliseconds
+            ))
+        }, 10); // execute every 10 milliseconds
     }
 
     function handleStop() {
-        clearTimeout(timer.current); // built-in function to clear the timeout with timer pointer
-        setTimerStarted(false);
-        setTimerExpired(false);
+        dialog.current.open();
+        clearInterval(timer.current); // built-in function to clear the timeout with timer pointer
     }
 
     return (
         <>
-            <ResultModal ref={dialog} targetTime={targetTime} result={"lost"}/>
+            <ResultModal ref={dialog} targetTime={targetTime} remainingTime={timeRemaining} onReset={handleReset} />
             <section className="challenge">
                 <h2>{title}</h2>
                 <p className="challenge-time">
                     {targetTime} second{targetTime > 1 ? "s" : ""}
                 </p>
                 <p>
-                    <button onClick={timerStarted ? handleStop : handleStart}>
-                        {timerStarted ? "Stop" : "Start"} Challenge
+                    <button onClick={timerIsActive ? handleStop : handleStart}>
+                        {timerIsActive ? "Stop" : "Start"} Challenge
                     </button>
                 </p>
-                <p className={timerStarted ? "active" : undefined}>
-                    {timerStarted ? "Time is running..." : "Timer inactive"}
+                <p className={timerIsActive ? "active" : undefined}>
+                    {timerIsActive ? "Time is running..." : "Timer inactive"}
                 </p>
             </section>
         </>
