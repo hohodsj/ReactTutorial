@@ -1,30 +1,46 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+const TIMER = 3000; // 3 seconds
+
 export default function DeleteConfirmation({ onConfirm, onCancel }) {
+    const [remainingTime, setRemainingTime] = useState(TIMER);
 
-  useEffect(() => {
-    console.log('TIMER SET');
-    const timer = setTimeout(() => {
-      onConfirm();
-    }, 3000)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            console.log("INTERVAL");
+            setRemainingTime((prevTime) => prevTime - 10);
+        }, 10);
+        return () => {
+            console.log("INTERVAL CLEARED");
+            clearInterval(interval);
+        }
+    }, []);
 
-    return () => {
-      console.log('TIMER CLEARED');
-      clearTimeout(timer);
-    }
-  },[])
+    useEffect(() => {
+        console.log("TIMER SET");
+        const timer = setTimeout(() => {
+            onConfirm();
+        }, TIMER);
 
-  return (
-    <div id="delete-confirmation">
-      <h2>Are you sure?</h2>
-      <p>Do you really want to remove this place?</p>
-      <div id="confirmation-actions">
-        <button onClick={onCancel} className="button-text">
-          No
-        </button>
-        <button onClick={onConfirm} className="button">
-          Yes
-        </button>
-      </div>
-    </div>
-  );
+        return () => {
+            console.log("TIMER CLEARED");
+            clearTimeout(timer);
+        };
+    }, [onConfirm]);
+
+    return (
+        <div id="delete-confirmation">
+            <h2>Are you sure?</h2>
+            <p>Do you really want to remove this place?</p>
+            <div id="confirmation-actions">
+                <button onClick={onCancel} className="button-text">
+                    No
+                </button>
+                <button onClick={onConfirm} className="button">
+                    Yes
+                </button>
+            </div>
+            <progress value={remainingTime} max={TIMER} />
+        </div>
+    );
 }
