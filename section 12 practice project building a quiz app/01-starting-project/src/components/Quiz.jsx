@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QUESTIONS from "../question.js";
 import quizCompleteImg from "../assets/quiz-complete.png";
+import ProgressBar from "./ProgressBar.jsx";
 
 export default function Quiz() {
+    const timeout = 15000;
     const [userAnswers, setUserAnswers] = useState([]);
 
     const activeQuestionIndex = userAnswers.length;
@@ -14,6 +16,7 @@ export default function Quiz() {
             return [...prev, selectedAnswer];
         });
     }
+    
 
     if (quizIsComlete) {
         return (
@@ -23,7 +26,13 @@ export default function Quiz() {
             </div>
         )
     }
-    
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            handleSelectAnswer("");
+        },timeout);
+        return () => clearTimeout(timer);
+    }, [activeQuestionIndex])
+
     const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
     shuffledAnswers.sort(() => Math.random() - 0.5); // shuffle
 
@@ -45,6 +54,7 @@ export default function Quiz() {
                     })}
                 </ul>
             </div>
+            <ProgressBar timeout={timeout} questionIndex={activeQuestionIndex}/>
         </div>
     );
 }
