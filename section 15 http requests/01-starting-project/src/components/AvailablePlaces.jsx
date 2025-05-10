@@ -1,21 +1,45 @@
 import Places from './Places.jsx';
 import { useState, useEffect } from 'react';
+import ErrorMessage from './ErrorMessage.jsx';
+import { sortPlacesByDistance } from '../loc.js';
 
 export default function AvailablePlaces({ onSelectPlace }) {
   const [isFetching, setIsFetching] = useState(false);
   const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [error, setError] = useState();
 
   useEffect(() => {
-    setIsFetching(true);
     async function fetchPlaces() {
-      const response = await fetch('http://localhost:3000/places');
-      const data = await response.json();
-      setAvailablePlaces(data.places);
-      setIsFetching(false);
+      setIsFetching(true);
+      try {
+        const response = await fetch('http://localhost:3000/places');
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error('Error fetching places'); 
+        }
+
+        navigator.geolocation.getCurrentPosition((position) => {
+          const sortedPlaces = sortPlacesByDistance(data.places, position.coords.latitude, position.coords.longitude);
+          setAvailablePlaces(sortedPlaces);
+          setIsFetching(false); // We setIsFetching because callback is async
+        });
+      } catch (error) {
+        setError({message: error.message || 'Could not fetch places, please try again later.'});
+        setIsFetching(false);
+      }
+      
     }
     fetchPlaces();
   }, [])
-
+  if (error) {
+    return (
+      <ErrorMessage
+        title="Error fetching places"
+        message={error.message}
+        onConfirm={() => setError(null)}
+      />
+    )
+  }
   return (
     <Places
       title="Available Places"
