@@ -1,20 +1,39 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 
 import Places from "./components/Places.jsx";
 import Modal from "./components/Modal.jsx";
 import DeleteConfirmation from "./components/DeleteConfirmation.jsx";
 import logoImg from "./assets/logo.png";
 import AvailablePlaces from "./components/AvailablePlaces.jsx";
-import { updateUserPlaces } from "./http.js";
+import { updateUserPlaces, fetchUserPlaces } from "./http.js";
 import ErrorMessage from "./components/ErrorMessage.jsx";
 
 function App() {
     const selectedPlace = useRef();
 
     const [userPlaces, setUserPlaces] = useState([]);
+    const [isFetching, setIsFetching] = useState(false);
     const [errorUpdatingPlaces, setErrorUpdatingPlaces] = useState();
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    useEffect(() => {
+        async function fetchSavedPlaces() {
+            setIsFetching(true);
+            try {
+                const places = await fetchUserPlaces();
+                setUserPlaces(places);
+            } catch (error) {
+                setErrorUpdatingPlaces({
+                    message:
+                        error.message ||
+                        "Could not fetch user places, please try again later.",
+                });
+            }
+            setIsFetching(false);
+        }
+        fetchSavedPlaces();
+    }, []);
 
     function handleStartRemovePlace(place) {
         setModalIsOpen(true);
@@ -50,15 +69,33 @@ function App() {
         }
     }
 
-    const handleRemovePlace = useCallback(async function handleRemovePlace() {
-        setUserPlaces((prevPickedPlaces) =>
-            prevPickedPlaces.filter(
-                (place) => place.id !== selectedPlace.current.id
-            )
-        );
+    const handleRemovePlace = useCallback(
+        async function handleRemovePlace() {
+            setUserPlaces((prevPickedPlaces) =>
+                prevPickedPlaces.filter(
+                    (place) => place.id !== selectedPlace.current.id
+                )
+            );
+            try {
+                await updateUserPlaces(
+                    userPlaces.filter(
+                        (prevPickPlaces) =>
+                            prevPickPlaces.id !== selectedPlace.current.id
+                    )
+                );
+            } catch (error) {
+                setUserPlaces(userPlaces); // Note userPlaces is still the old state
+                setErrorUpdatingPlaces({
+                    message:
+                        error.message ||
+                        "Could not update user places, please try again later.",
+                });
+            }
 
-        setModalIsOpen(false);
-    }, []);
+            setModalIsOpen(false);
+        },
+        [userPlaces]
+    );
 
     return (
         <>
@@ -87,12 +124,22 @@ function App() {
                 </p>
             </header>
             <main>
-                <Places
-                    title="I'd like to visit ..."
-                    fallbackText="Select the places you would like to visit below."
-                    places={userPlaces}
-                    onSelectPlace={handleStartRemovePlace}
-                />
+                {errorUpdatingPlaces && (
+                    <ErrorMessage
+                        title="AN error occurred"
+                        message={errorUpdatingPlaces.message}
+                    />
+                )}
+                {!errorUpdatingPlaces && (
+                    <Places
+                        title="I'd like to visit ..."
+                        fallbackText="Select the places you would like to visit below."
+                        isLoading={isFetching}
+                        loadingText="Fetching your places..."
+                        places={userPlaces}
+                        onSelectPlace={handleStartRemovePlace}
+                    />
+                )}
 
                 <AvailablePlaces onSelectPlace={handleSelectPlace} />
             </main>
