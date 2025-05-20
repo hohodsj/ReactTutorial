@@ -1,34 +1,14 @@
-import { useState } from "react";
+import { useRef } from "react";
 
 export default function Login() {
-    // approach 1: use 2 states
-    /*
-    const [enteredEmail, setEnteredEmail] = useState("");
-    const [enteredPassword, setEnteredPassword] = useState("");
-
-    function handleEmailChange(event) {
-        setEnteredEmail(event.target.value);
-        console.log("Email changed", event.target.value);
-    }
-    
-    function handlePasswordChange(event) {
-        setEnteredPassword(event.target.value);
-        console.log("Password changed", event.target.value);
-    }
-   */
-
-    // approach 2: use 1 state
-    const [enteredValues, setEnteredValues] = useState({});
-    function handleInputChange(identifier, event) {
-        setEnteredValues((prevState) => ({
-            ...prevState,
-            [identifier]: event.target.value,
-        }));
-    }
+    const email = useRef();
+    const password = useRef();
 
     function handleSubmit(event) {
         event.preventDefault();
-        console.log("Form submitted");
+        const enteredEmail = email.current.value;
+        const enteredPassword = password.current.value;
+        console.log("Form submitted", enteredEmail, enteredPassword);
     }
 
     return (
@@ -38,26 +18,17 @@ export default function Login() {
             <div className="control-row">
                 <div className="control no-margin">
                     <label htmlFor="email">Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        onChange={(event) => handleInputChange("email", event)}
-                        value={enteredValues.email || ""}
-                    />
+                    <input id="email" type="email" name="email" ref={email} />
                 </div>
 
                 <div className="control no-margin">
-                    <label
-                        htmlFor="password"
-                        onChange={(event) =>
-                            handleInputChange("password", event)
-                        }
-                        value={enteredValues.password || ""}
-                    >
-                        Password
-                    </label>
-                    <input id="password" type="password" name="password" />
+                    <label htmlFor="password">Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        ref={password}
+                    />
                 </div>
             </div>
 
