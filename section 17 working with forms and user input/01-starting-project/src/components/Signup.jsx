@@ -1,6 +1,18 @@
 export default function Signup() {
+    function handleSubmit(event) {
+        event.preventDefault();
+        // FormData is a built-in browser API not a React API, to access must have name attributes in the form
+        // ex name="email"
+        const fd = new FormData(event.target); 
+        // const enteredEmail = fd.get("email"); // get the value of the email field
+        // const enteredPassword = fd.get("password"); // get the value of the password field
+        const acquisitionChannel = fd.getAll("acquisition"); // for multiple checkboxes with same name we will use getAll oterwise data will not have this value if nothing checked
+        const data = Object.fromEntries(fd.entries()); // convert the FormData object to a regular object
+        data.acquisition = acquisitionChannel;
+        console.log("Form submitted", data);
+    }
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <h2>Welcome on board!</h2>
       <p>We just need a little bit of data from you to get you started 🚀</p>
 
