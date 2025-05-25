@@ -23,19 +23,36 @@ export default function Login() {
         password: "",
     });
 
+    const [didEdit, setDidEdit] = useState({
+        email: false,
+        password: false,
+    });
+
     const emailIsInvalid =
-        enteredValues.email !== "" && !enteredValues.email.includes("@");
+        didEdit.email && !enteredValues.email.includes("@");
 
     function handleInputChange(identifier, event) {
         setEnteredValues((prevState) => ({
             ...prevState,
             [identifier]: event.target.value,
         }));
+        // To set didEdit back to false once user start typing (give user chance to redo input without seeing error), I think this is not needed.
+        setDidEdit((prevEdit) => ({
+            ...prevEdit,
+            [identifier]: false,
+        }))
     }
 
     function handleSubmit(event) {
         event.preventDefault();
         console.log("Form submitted");
+    }
+
+    function handleInputBlur(identifier) {
+        setDidEdit(prevEdit => ({
+            ...prevEdit,
+            [identifier]: true,
+        }));
     }
 
     return (
@@ -49,6 +66,7 @@ export default function Login() {
                         id="email"
                         type="email"
                         name="email"
+                        onBlur={() => handleInputBlur("email")}
                         onChange={(event) => handleInputChange("email", event)}
                         value={enteredValues.email || ""}
                     />
