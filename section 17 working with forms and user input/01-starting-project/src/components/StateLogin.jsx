@@ -18,7 +18,14 @@ export default function Login() {
    */
 
     // approach 2: use 1 state
-    const [enteredValues, setEnteredValues] = useState({});
+    const [enteredValues, setEnteredValues] = useState({
+        email: "",
+        password: "",
+    });
+
+    const emailIsInvalid =
+        enteredValues.email !== "" && !enteredValues.email.includes("@");
+
     function handleInputChange(identifier, event) {
         setEnteredValues((prevState) => ({
             ...prevState,
@@ -45,6 +52,11 @@ export default function Login() {
                         onChange={(event) => handleInputChange("email", event)}
                         value={enteredValues.email || ""}
                     />
+                    <div className="control-error">
+                        {emailIsInvalid && (
+                            <p>Please enter a valid email address.</p>
+                        )}
+                    </div>
                 </div>
 
                 <div className="control no-margin">

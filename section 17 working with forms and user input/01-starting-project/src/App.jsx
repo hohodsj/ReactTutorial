@@ -1,16 +1,18 @@
-import Header from './components/Header.jsx';
-//import Login from './components/Login.jsx';
-import Signup from './components/Signup.jsx';
+import Header from "./components/Header.jsx";
+import Login from "./components/StateLogin.jsx";
+// import Signup from './components/Signup.jsx';
 
 function App() {
-  return (
-    <>
-      <Header />
-      <main>
-        <Signup />
-      </main>
-    </>
-  );
+    return (
+        <>
+            <Header />
+            <main>
+                {/* <Signup /> */}
+                <Login />
+                {/* <StateLogin /> */}
+            </main>
+        </>
+    );
 }
 
 export default App;
