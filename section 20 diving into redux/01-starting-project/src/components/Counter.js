@@ -26,7 +26,7 @@ const Counter = () => {
       {show &&<div className={classes.value}>{counter}</div>}
       <div>
         <button onClick={incrementHandler}>Increment</button> {/* This button will dispatch an action to increment the counter  */}
-        <button onClick={increaseHandler}>Increment By 5</button>
+        <button onClick={increaseHandler}>Increment By 10</button>
         <button onClick={decrementHandler}>Decrement</button>
       </div>
       <button onClick={toggleCounterHandler}>Toggle Counter</button>
