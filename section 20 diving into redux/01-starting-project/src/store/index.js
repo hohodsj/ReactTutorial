@@ -1,4 +1,3 @@
-import { createStore } from "redux";
 import { createSlice, configureStore } from "@reduxjs/toolkit";
 
 const initialState = { counter: 0, showCounter: true };
@@ -6,7 +5,7 @@ const initialState = { counter: 0, showCounter: true };
 const counterSlice = createSlice({
     name: 'counter',
     initialState: initialState,
-    reducer: {
+    reducers: {
         increment(state){
             state.counter++; // directly mutate the state, Redux Toolkit uses Immer under the hood, and change the behavior to copy state and update counter.
         },
@@ -14,7 +13,7 @@ const counterSlice = createSlice({
             state.counter--; 
         },
         increase(state, action){
-            state.counter += action.value; // action.value is the payload passed when dispatching the action
+            state.counter += action.payload; // payload is a property defined by the Redux Toolkit, it will received something like {type: SOME_UNIQUE_INDEXTIFIER, payload: 10}
         },
         toggle(state){
             state.showCounter = !state.showCounter; // toggle the showCounter boolean
@@ -22,8 +21,10 @@ const counterSlice = createSlice({
     }
 })
 
+
 const store = configureStore({
     reducer: counterSlice.reducer
 });
 
+export const counterActions = counterSlice.actions; // export the actions to be used in components
 export default store;
