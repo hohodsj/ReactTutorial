@@ -5,7 +5,8 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Notification from "./components/UI/Notification";
-import { sendCartData } from "./store/cart-slice";
+import { sendCartData } from "./store/cart-actions";
+import { fetchCartData } from "./store/cart-actions";
 
 let isInitial = true;
 // import { initializeApp } from "firebase/app";
@@ -18,11 +19,17 @@ function App() {
     const notification = useSelector((state) => state.ui.notification);
 
     useEffect(() => {
+        dispatch(fetchCartData());
+    },[dispatch]);
+
+    useEffect(() => {
         if(isInitial) {
             isInitial = false;
             return;
         }
-        dispatch(sendCartData(cart));
+        if(cart.changed) {
+            dispatch(sendCartData(cart));
+        }
     }, [cart, dispatch]);
     return (
         <>
