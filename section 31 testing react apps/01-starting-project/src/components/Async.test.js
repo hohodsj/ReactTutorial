@@ -7,7 +7,7 @@ describe('Async component', () => {
 
         // if only getByRole and multiple items, it would fail
         // const listItemElements = screen.getAllByRole('listitem'); // would fail because there are no items yet when first load (async)
-        const listItemElements = await screen.findAllByRole('listitem'); // findxxx fill returns a promise that resolves when the elements are found
+        const listItemElements = await screen.findAllByRole('listitem'); // findxxx returns a promise that resolves when the elements are found
         expect(listItemElements).not.toHaveLength(0);
     })
 })
